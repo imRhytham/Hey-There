@@ -55,4 +55,30 @@ const loginUser = asyncHandler(async (req, res) => {
 	}
 });
 
-module.exports = { registerUser, loginUser };
+const searchUser = asyncHandler(async (req, res) => {
+	const { name } = req.query;
+
+	const keyword = name
+		? {
+				$or: [
+					{
+						name: { $regex: name, $options: 'i' },
+					},
+					{
+						email: { $regex: name, $options: 'i' },
+					},
+				],
+		  }
+		: {};
+
+	const user = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+
+	if (user) {
+		res.json(user);
+	} else {
+		res.status(404);
+		throw new Error('User not found');
+	}
+});
+
+module.exports = { registerUser, loginUser, searchUser };

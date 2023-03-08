@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const chatSchema = mongoose.Schema(
 	{
 		chatName: { type: String, trim: true },
+		groupDescription: { type: String, trim: true },
 		groupChat: {
 			type: Boolean,
 			default: false,
@@ -13,7 +14,7 @@ const chatSchema = mongoose.Schema(
 				ref: 'User',
 			},
 		],
-		messages: [
+		latestMessage: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: 'Message',

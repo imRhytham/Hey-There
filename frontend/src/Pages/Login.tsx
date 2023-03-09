@@ -1,10 +1,12 @@
-import axios, { AxiosError } from 'axios';
 import React, { ChangeEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import Loader from '../components/Loader';
 import TextField from '../components/TextField';
 import Toast from '../components/Toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../redux/actions/authActions';
+import { stat } from 'fs';
 
 interface form {
 	email: string;
@@ -16,69 +18,29 @@ const Login = () => {
 		email: '',
 		password: '',
 	});
-	const [loading, setLoading] = useState(false);
-	const [toast, setToast] = useState({
-		message: '',
-		color: '',
-		duration: 0,
-	});
-	const [openToast, setOpenToast] = useState(false);
-	const navigate = useNavigate();
+	const navigate: any = useNavigate();
+	const dispatch: any = useDispatch();
+	const loading: boolean = useSelector((state: any) => state.auth.loading);
+	const error: string = useSelector((state: any) => state.auth.error);
+	const isAuthenticated: boolean = useSelector(
+		(state: any) => state.auth.isAuthenticated
+	);
 
 	const eventHandler = (e: ChangeEvent<HTMLInputElement>, key: string) => {
 		setUser((prev) => ({ ...prev, [key]: e.target.value }));
 	};
 
 	const handleSubmit = async () => {
-		console.log(user);
-		if (!user.email || !user.password) {
-			setToast({
-				message: 'Please Enter All fields',
-				color: 'orange',
-				duration: 5000,
-			});
-			setOpenToast(true);
-			return;
-		}
-		setLoading(true);
-		try {
-			const res = await axios.post(
-				'http://localhost:5000/api/user/login',
-				user
-			);
-
-			console.log(res?.data);
-			setLoading(false);
-			setToast({
-				message: 'Logged In Successfully',
-				color: 'green',
-				duration: 5000,
-			});
-			setOpenToast(true);
+		dispatch(login(user));
+		if (isAuthenticated) {
 			navigate('/chats');
-		} catch (e) {
-			const err = e as AxiosError;
-			console.log(err.response?.data);
-			setToast({
-				message: (e as Error).message,
-				color: 'red',
-				duration: 5000,
-			});
-			setOpenToast(true);
-			setLoading(false);
 		}
 	};
 
 	return (
 		<>
-			<Loader open={loading} setOpen={setLoading} />
-			<Toast
-				open={openToast}
-				setOpen={setOpenToast}
-				color={toast.color}
-				duration={toast.duration}
-				message={toast.message}
-			/>
+			<Loader open={loading} />
+			<Toast open={error} color='red' message={error} />
 			<section className='h-screen'>
 				<div className='px-6 h-full text-gray-800'>
 					<div className='flex xl:justify-center lg:justify-between justify-center items-center flex-wrap h-full g-6'>
@@ -115,7 +77,8 @@ const Login = () => {
 							<div className='text-center lg:text-left'>
 								<Button
 									onClick={handleSubmit}
-									className='inline-block px-7 py-3 bg-green text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out'
+									disabled={Object.values(user).some((item) => item === '')}
+									className='inline-block px-7 py-3 bg-green-600 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out disabled:bg-green-400'
 								>
 									Login
 								</Button>

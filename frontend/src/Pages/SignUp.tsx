@@ -1,11 +1,11 @@
-import axios from 'axios';
 import React, { ChangeEvent, useState } from 'react';
 import Loader from '../components/Loader';
 import TextField from '../components/TextField';
 import Button from '../components/Button';
-
 import Toast from '../components/Toast';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { register } from '../redux/actions/authActions';
 interface form {
 	name: string;
 	email: string;
@@ -13,19 +13,18 @@ interface form {
 }
 
 const SignUp = () => {
-	const [user, setUser] = React.useState<form>({
+	const [user, setUser] = useState<form>({
 		name: '',
 		email: '',
 		password: '',
 	});
-	const [loading, setLoading] = useState(false);
-	const [openToast, setOpenToast] = useState(false);
-	const [toast, setToast] = useState({
-		message: '',
-		color: '',
-		duration: 0,
-	});
-	const navigate = useNavigate();
+	const loading: boolean = useSelector((state: any) => state.auth.loading);
+	const error: string = useSelector((state: any) => state.auth.error);
+	const navigate: any = useNavigate();
+	const dispatch: any = useDispatch();
+	const isAuthenticated: boolean = useSelector(
+		(state: any) => state.auth.isAuthenticated
+	);
 
 	const eventHandler = (e: ChangeEvent<HTMLInputElement>, key: string) => {
 		setUser({
@@ -34,54 +33,17 @@ const SignUp = () => {
 		});
 	};
 
-	const handleSubmit = async () => {
-		if (Object.values(user).some((v) => v === '')) {
-			setToast({
-				message: 'Please Enter All fields',
-				color: 'orange',
-				duration: 5000,
-			});
-			setOpenToast(true);
-			return;
-		}
-		console.log(user);
-		setLoading(true);
-		try {
-			const res = await axios.post(
-				'http://localhost:5000/api/user/register',
-				user
-			);
-			console.log(res);
-			setToast({
-				message: 'Registered Successfully',
-				color: 'green',
-				duration: 5000,
-			});
-			setOpenToast(true);
-			setLoading(false);
-			navigate('/');
-		} catch (error) {
-			console.log(error);
-			setToast({
-				message: 'Something went wrong',
-				color: 'red',
-				duration: 5000,
-			});
-			setOpenToast(true);
-			setLoading(false);
+	const handleSubmit = () => {
+		dispatch(register(user));
+		if (isAuthenticated) {
+			navigate('/chats');
 		}
 	};
 
 	return (
 		<>
-			<Toast
-				open={openToast}
-				setOpen={setOpenToast}
-				color={toast.color}
-				duration={toast.duration}
-				message={toast.message}
-			/>
-			<Loader open={loading} setOpen={setLoading} />
+			<Toast open={error} color='red' message={error} />
+			<Loader open={loading} />
 			<section className='h-screen'>
 				<div className='px-6 h-full text-gray-800'>
 					<div className='flex xl:justify-center lg:justify-between justify-center items-center flex-wrap h-full g-6'>
@@ -127,7 +89,8 @@ const SignUp = () => {
 							<div className='text-center lg:text-left'>
 								<Button
 									onClick={handleSubmit}
-									className='inline-block px-7 py-3 bg-green text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out'
+									disabled={Object.values(user).some((v) => v === '')}
+									className='inline-block px-7 py-3 bg-green-600 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out disabled:bg-green-400'
 								>
 									Sign Up
 								</Button>

@@ -2,17 +2,9 @@ import React from 'react';
 
 interface LoaderProps {
 	open: boolean;
-	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Loader = ({ open, setOpen }: LoaderProps) => {
-	React.useEffect(() => {
-		const timer = setTimeout(() => {
-			setOpen(false);
-		}, 2000);
-		return () => clearTimeout(timer);
-	}, [setOpen]);
-
+const Loader = ({ open }: LoaderProps) => {
 	if (!open) return null;
 	return (
 		<div className='fixed inset-0 flex items-center justify-center z-50'>

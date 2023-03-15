@@ -24,7 +24,7 @@ export const login = (payLoad: Object) => async (dispatch: any) => {
 			type: types.LOGIN,
 			payload: data,
 		});
-		sessionStorage.setItem('user', data);
+		sessionStorage.setItem('user', JSON.stringify(data));
 		sessionStorage.setItem('token', data.token);
 	} catch (error: any) {
 		dispatch(setAuthError(error.response.data.msg));
@@ -36,12 +36,12 @@ export const login = (payLoad: Object) => async (dispatch: any) => {
 export const register = (payLoad: Object) => async (dispatch: any) => {
 	setAuthLoader(true);
 	try {
-		const { data } = await axios.post(`${API_URI}/register`, payLoad);
+		const { data } = await axios.post(`${API_URI}/user/register`, payLoad);
 		dispatch({
 			type: types.LOGIN,
 			payload: data,
 		});
-		sessionStorage.setItem('user', data);
+		sessionStorage.setItem('user', JSON.stringify(data));
 		sessionStorage.setItem('token', data.token);
 	} catch (error: any) {
 		dispatch(setAuthError(error.response.data.msg));

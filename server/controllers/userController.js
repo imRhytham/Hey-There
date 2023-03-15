@@ -29,6 +29,7 @@ const registerUser = asyncHandler(async (req, res) => {
 			name: user.name,
 			email: user.email,
 			isAdmin: user.isAdmin,
+			avatar: user.avatar,
 			token: generateToken(user._id),
 		});
 	} else {
@@ -47,6 +48,7 @@ const loginUser = asyncHandler(async (req, res) => {
 			name: user.name,
 			email: user.email,
 			isAdmin: user.isAdmin,
+			avatar: user.avatar,
 			token: generateToken(user._id),
 		});
 	} else {
@@ -57,6 +59,11 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const searchUser = asyncHandler(async (req, res) => {
 	const { name } = req.query;
+
+	if (name === '') {
+		res.json([]);
+		return;
+	}
 
 	const keyword = name
 		? {
@@ -71,7 +78,9 @@ const searchUser = asyncHandler(async (req, res) => {
 		  }
 		: {};
 
-	const user = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+	const user = await User.find(keyword)
+		.find({ _id: { $ne: req.user._id } })
+		.select('-password');
 
 	if (user) {
 		res.json(user);

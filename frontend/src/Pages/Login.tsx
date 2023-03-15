@@ -30,11 +30,12 @@ const Login = () => {
 		setUser((prev) => ({ ...prev, [key]: e.target.value }));
 	};
 
+	if (isAuthenticated) {
+		navigate('/chat');
+	}
+
 	const handleSubmit = async () => {
 		dispatch(login(user));
-		if (isAuthenticated) {
-			navigate('/chats');
-		}
 	};
 
 	return (

@@ -17,7 +17,7 @@ router.post('/', protect, accessChat);
 router.get('/', protect, getChats);
 router.post('/group', protect, createGroupChat);
 router.put('/group', protect, editGroupInfo);
-router.delete('/', protect, deleteChat);
+router.delete('/:chatId', protect, deleteChat);
 router.put('/group/add', protect, addUsersToGroup);
 router.put('/group/remove', protect, removeUsersFromGroup);
 

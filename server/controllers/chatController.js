@@ -44,6 +44,7 @@ const accessChat = asyncHandler(async (req, res) => {
 				'users',
 				'-password'
 			);
+			const allChats = await Chat.find();
 			res.status(200).json(FullChat);
 		} catch (error) {
 			res.status(400);
@@ -156,7 +157,7 @@ const editGroupInfo = asyncHandler(async (req, res) => {
 //@route       DELETE /api/chat
 //@access      Protected
 const deleteChat = asyncHandler(async (req, res) => {
-	const { chatId } = req.body;
+	const { chatId } = req.params;
 
 	if (!chatId) {
 		console.log('chatId param not sent with request');
@@ -177,9 +178,9 @@ const deleteChat = asyncHandler(async (req, res) => {
 //@route       PUT /api/chat/group/add
 //@access      Protected
 const addUsersToGroup = asyncHandler(async (req, res) => {
-	const { chatId, users } = req.body;
+	const { chatId, userId } = req.body;
 
-	if (!chatId || users.length < 1) {
+	if (!chatId || !userId) {
 		console.log('chatId or users param not sent with request');
 		return res.sendStatus(400);
 	}
@@ -190,7 +191,7 @@ const addUsersToGroup = asyncHandler(async (req, res) => {
 		const updatedChat = await Chat.findByIdAndUpdate(
 			chatId,
 			{
-				$push: { users: { $each: users } },
+				$push: { users: userId },
 			},
 			{
 				new: true,
@@ -211,9 +212,9 @@ const addUsersToGroup = asyncHandler(async (req, res) => {
 //@route       PUT /api/chat/group/remove
 //@access      Protected
 const removeUsersFromGroup = asyncHandler(async (req, res) => {
-	const { chatId, users } = req.body;
+	const { chatId, userId } = req.body;
 
-	if (!chatId || !users) {
+	if (!chatId || !userId) {
 		console.log('chatId or users param not sent with request');
 		return res.sendStatus(400);
 	}
@@ -222,7 +223,7 @@ const removeUsersFromGroup = asyncHandler(async (req, res) => {
 		const updatedChat = await Chat.findByIdAndUpdate(
 			chatId,
 			{
-				$pull: { users: { $in: users } },
+				$pull: { users: userId },
 			},
 			{
 				new: true,

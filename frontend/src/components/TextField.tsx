@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 interface TextFieldProps {
 	label?: string;
@@ -7,6 +7,7 @@ interface TextFieldProps {
 	type?: string;
 	className?: string;
 	placeholder?: string;
+	icon?: ReactNode;
 }
 
 const TextField = ({
@@ -16,17 +17,23 @@ const TextField = ({
 	type = 'text',
 	className = '',
 	placeholder = '',
+	icon,
 }: TextFieldProps) => {
 	return (
-		<div className={`flex flex-col ${className}`}>
-			<label className='text-sm'>{label}</label>
-			<input
-				placeholder={placeholder}
-				type={type}
-				value={value}
-				onChange={onChange}
-				className='px-4 py-2 rounded-md border border-gray-300'
-			/>
+		<div
+			className={`flex flex-col space-y-1 border-2 border-gray-200 rounded-md p-3  ${className}`}
+		>
+			{label && <label className='text-sm font-semibold'>{label}</label>}
+			<div className='flex items-center space-x-2'>
+				<input
+					type={type}
+					value={value}
+					onChange={onChange}
+					placeholder={placeholder}
+					className='focus:outline-none focus:border-none'
+				/>
+				{icon && icon}
+			</div>
 		</div>
 	);
 };

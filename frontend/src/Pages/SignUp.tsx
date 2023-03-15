@@ -33,11 +33,12 @@ const SignUp = () => {
 		});
 	};
 
+	if (isAuthenticated) {
+		navigate('/chat');
+	}
+
 	const handleSubmit = () => {
 		dispatch(register(user));
-		if (isAuthenticated) {
-			navigate('/chats');
-		}
 	};
 
 	return (

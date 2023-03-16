@@ -14,6 +14,7 @@ import {
 	selectChat,
 } from '../redux/actions/chatActions';
 import { getSender } from '../common/common';
+import Loader from '../components/Loader';
 
 interface formData {
 	chatName: string;
@@ -35,10 +36,11 @@ const MyChats = () => {
 	const users = useSelector((state: any) => state.users.users);
 	const Allchats = useSelector((state: any) => state.chats.chats);
 	const selectedChat = useSelector((state: any) => state.chats.selectedChat);
+	const loading = useSelector((state: any) => state.chats.loading);
 
 	useEffect(() => {
 		dispatch(getAllChats());
-	}, []);
+	}, [dispatch]);
 
 	useEffect(() => {
 		if (open) {
@@ -76,9 +78,10 @@ const MyChats = () => {
 
 	return (
 		<>
+			<Loader open={loading} />
 			<div
 				className={
-					selectedChat._id
+					selectedChat?._id
 						? 'hidden flex-col w-1/5 h-[88vh] bg-gray-200 rounded-lg p-5 md:flex'
 						: 'flex-col w-full md:w-1/5 h-[88vh] bg-gray-200 rounded-lg p-5 md:flex'
 				}
@@ -104,11 +107,7 @@ const MyChats = () => {
 									? chat.chatName
 									: getSender(self, chat.users).name
 							}
-							email={
-								chat.groupChat
-									? chat.groupDescription
-									: getSender(self, chat.users).email
-							}
+							lastMessage={chat?.latestMessage[0]?.text || ''}
 						/>
 					))}
 				</div>
@@ -149,7 +148,7 @@ const MyChats = () => {
 							<ChatCard
 								onClick={() => handleAddUser(user)}
 								_id={user._id}
-								email={user.email}
+								lastMessage={user.email}
 								name={user.name}
 							/>
 						))}

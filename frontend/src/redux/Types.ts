@@ -28,3 +28,9 @@ export const CLEAR_CHAT_MESSAGE = 'CLEAR_CHAT_MESSAGE';
 export const GET_USERS = 'GET_USERS';
 export const SET_USER_LOADER = 'SET_USER_LOADER';
 export const SET_USER_ERROR = 'SET_USER_ERROR';
+
+//Messages
+export const GET_MESSAGES = 'GET_MESSAGES';
+export const SEND_MESSAGE = 'SEND_MESSAGE';
+export const SET_MESSAGE_LOADER = 'SET_MESSAGE_LOADER';
+export const SET_MESSAGE_ERROR = 'SET_MESSAGE_ERROR';

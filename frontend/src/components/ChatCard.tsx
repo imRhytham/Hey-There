@@ -3,11 +3,11 @@ import React from 'react';
 interface User {
 	_id: string;
 	name: string;
-	email: string;
+	lastMessage?: string;
 	onClick?: () => void;
 }
 
-const ChatCard = ({ _id, name, email, onClick }: User) => {
+const ChatCard = ({ _id, name, lastMessage, onClick }: User) => {
 	return (
 		<>
 			<div
@@ -16,7 +16,9 @@ const ChatCard = ({ _id, name, email, onClick }: User) => {
 			>
 				<div className='flex flex-col'>
 					<h1 className='text-lg font-bold'>{name}</h1>
-					<p className='text-gray-500'>{email}</p>
+					<p className='text-gray-500' title={lastMessage}>
+						{lastMessage}
+					</p>
 				</div>
 			</div>
 		</>

@@ -6,7 +6,7 @@ const Chats = () => {
 	return (
 		<div>
 			<Navbar />
-			<div className='flex flex-row justify-between p-5 items-center space-x-0 md:space-x-5 '>
+			<div className='flex flex-row justify-between md:p-5 items-center md:space-x-5 '>
 				<MyChats />
 				<ChatBox />
 			</div>

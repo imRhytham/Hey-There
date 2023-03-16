@@ -103,7 +103,7 @@ const Navbar = () => {
 								{users.map((user: any) => (
 									<ChatCard
 										_id={user._id}
-										email={user.email}
+										lastMessage={user.email}
 										name={user.name}
 										key={user._id}
 										onClick={() => startChat(user)}

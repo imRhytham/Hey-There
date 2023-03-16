@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
 	ArrowUturnLeftIcon,
 	EllipsisVerticalIcon,
+	PaperAirplaneIcon,
 } from '@heroicons/react/24/outline';
 import {
 	addUserToGroup,
@@ -11,13 +12,17 @@ import {
 	selectChat,
 	unSelectChat,
 } from '../redux/actions/chatActions';
-import { getSender, isAdmin } from '../common/common';
+import { getSender, isAdmin, isSameSender } from '../common/common';
 import Modal from '../components/Modal';
 import TextField from '../components/TextField';
 import Chips from '../components/Chips';
 import useDebounce from '../Hooks/useDebounce';
 import { getUsers } from '../redux/actions/userActions';
 import ChatCard from '../components/ChatCard';
+import { getMessages, sendMessage } from '../redux/actions/messageActions';
+import ScrollableFeed from 'react-scrollable-feed';
+import ScrollableChat from './ScrollableChat';
+import Loader from '../components/Loader';
 
 const ChatBox = () => {
 	const dispatch: any = useDispatch();
@@ -28,7 +33,9 @@ const ChatBox = () => {
 	const [search, setSearch] = useState<string>('');
 	const allUsers = useSelector((state: any) => state.users.users);
 	const debounceValue = useDebounce(search, 500);
-	console.log(selectedChat);
+	const [enteredMessage, setEnteredMessage] = useState<string>('');
+	const messages = useSelector((state: any) => state.messages.messages);
+	const loading = useSelector((state: any) => state.messages.loading);
 
 	useEffect(() => {
 		if (openModal && selectedChat.groupChat) {
@@ -63,8 +70,35 @@ const ChatBox = () => {
 		}
 	}, [selectedChat]);
 
+	useEffect(() => {
+		if (selectedChat?._id) {
+			dispatch(getMessages(selectedChat?._id));
+		}
+	}, [selectedChat]);
+
+	const messageSend = useCallback(() => {
+		if (enteredMessage && enteredMessage.replace(/\s/g, '').length) {
+			console.log(selectedChat);
+
+			const payload = {
+				chatId: selectedChat._id,
+				text: enteredMessage,
+			};
+			dispatch(sendMessage(payload));
+			setEnteredMessage('');
+		}
+	}, [enteredMessage, selectedChat]);
+
+	const onKeyDown = (e: any) => {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			messageSend();
+		}
+	};
+
 	return (
 		<>
+			<Loader open={loading} />
 			<div
 				className={
 					selectedChat?._id
@@ -76,7 +110,7 @@ const ChatBox = () => {
 					<>
 						<div className='flex flex-row justify-between items-center'>
 							<button
-								className='flex items-center space-x-2 text-gray-500 hover:text-gray-300 p-3 md:hidden'
+								className='flex items-center space-x-2 text-gray-300 hover:text-gray-100 p-3 md:hidden'
 								onClick={() => dispatch(unSelectChat())}
 							>
 								<ArrowUturnLeftIcon className='h-6 w-6' />
@@ -95,7 +129,33 @@ const ChatBox = () => {
 								</button>
 							</div>
 						</div>
-						<div className='flex flex-col items-center justify-center h-full overflow-y-auto bg-slate-600 rounded-md'></div>
+						{/* chatBox Starts from here */}
+						<div className='flex flex-col  justify-between h-full overflow-y-auto bg-slate-600 rounded-md'>
+							<div className='flex flex-col h-full overflow-y-scroll'>
+								<ScrollableChat messages={messages} />
+							</div>
+
+							<div className='flex flex-row space-x-2 p-2'>
+								<input
+									type='text'
+									placeholder='Enter Message'
+									className='w-full  bg-slate-700 text-white rounded-md p-2'
+									value={enteredMessage}
+									onChange={(e) => setEnteredMessage(e.target.value)}
+									onKeyDown={onKeyDown}
+								/>
+								<button
+									className='bg-slate-700 text-white rounded-md p-2 disabled:bg-slate-500'
+									onClick={messageSend}
+									disabled={
+										!enteredMessage || !enteredMessage.replace(/\s/g, '').length
+									}
+								>
+									<PaperAirplaneIcon className='h-6 w-6' />
+								</button>
+							</div>
+						</div>
+						{/* chatBox ends here */}
 					</>
 				) : (
 					<h1 className='text-2xl font-bold text-center'>
@@ -103,7 +163,7 @@ const ChatBox = () => {
 					</h1>
 				)}
 			</div>
-			{selectedChat._id && (
+			{selectedChat?._id && (
 				<Modal
 					open={openModal}
 					setOpen={setOpenModal}
@@ -113,7 +173,7 @@ const ChatBox = () => {
 							: getSender(loggedUser, selectedChat?.users).name
 					}
 				>
-					{selectedChat.groupChat ? (
+					{selectedChat?.groupChat ? (
 						<>
 							<div className='flex flex-col items-center space-y-2'>
 								<TextField
@@ -152,7 +212,7 @@ const ChatBox = () => {
 										.filter((user: any) => user._id !== loggedUser._id)
 										.map((user: any) => (
 											<ChatCard
-												email={user.email}
+												lastMessage={user.email}
 												key={user._id}
 												name={user?.name}
 												onClick={() => handleAddUser(user._id)}
@@ -168,6 +228,7 @@ const ChatBox = () => {
 											? dispatch(deleteChat(selectedChat))
 											: handleRemoveUser(loggedUser._id);
 										setOpenModal(false);
+										dispatch(unSelectChat());
 									}}
 								>
 									Delete Chat
@@ -190,6 +251,7 @@ const ChatBox = () => {
 								onClick={() => {
 									dispatch(deleteChat(selectedChat));
 									setOpenModal(false);
+									dispatch(unSelectChat());
 								}}
 							>
 								Delete Chat

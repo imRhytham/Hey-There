@@ -11,6 +11,14 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+::-webkit-scrollbar {
+	width: 0;
+}
+
+::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
 		monospace;

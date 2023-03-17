@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import Loader from '../components/Loader';
@@ -30,11 +30,13 @@ const Login = () => {
 		setUser((prev) => ({ ...prev, [key]: e.target.value }));
 	};
 
-	if (isAuthenticated) {
-		navigate('/chat');
-	}
+	useEffect(() => {
+		if (isAuthenticated) {
+			navigate('/chat');
+		}
+	}, [isAuthenticated]);
 
-	const handleSubmit = async () => {
+	const handleSubmit = () => {
 		dispatch(login(user));
 	};
 

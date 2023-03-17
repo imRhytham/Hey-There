@@ -22,32 +22,48 @@ const setMessageError = (payload: string) => {
 	};
 };
 
-export const getMessages = (chatId: string) => async (dispatch: any) => {
-	setMessageLoader(true);
-	try {
-		const { data } = await axios.get(`${API_URI}/messages/${chatId}`, config);
-		dispatch({
-			type: types.GET_MESSAGES,
-			payload: data,
-		});
-	} catch (error: any) {
-		dispatch(setMessageError(error.response.data.msg));
-	} finally {
-		setMessageLoader(false);
-	}
+export const sendMessage = (payload: any) => {
+	return {
+		type: types.SEND_MESSAGE,
+		payload,
+	};
 };
 
-export const sendMessage = (payload: any) => async (dispatch: any) => {
-	setMessageLoader(true);
-	try {
-		const { data } = await axios.post(`${API_URI}/messages`, payload, config);
-		dispatch({
-			type: types.SEND_MESSAGE,
-			payload: data,
-		});
-	} catch (error: any) {
-		dispatch(setMessageError(error.response.data.msg));
-	} finally {
-		setMessageLoader(false);
-	}
-};
+export const getMessages =
+	(chatId: string, socket: any) => async (dispatch: any) => {
+		setMessageLoader(true);
+		try {
+			const { data } = await axios.get(`${API_URI}/messages/${chatId}`, {
+				headers: {
+					Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+				},
+			});
+			socket.emit('join room', chatId);
+			dispatch({
+				type: types.GET_MESSAGES,
+				payload: data,
+			});
+		} catch (error: any) {
+			dispatch(setMessageError(error.response.data.msg));
+		} finally {
+			setMessageLoader(false);
+		}
+	};
+
+export const sendMessageApi =
+	(payload: any, socket: any) => async (dispatch: any) => {
+		setMessageLoader(true);
+		try {
+			const { data } = await axios.post(`${API_URI}/messages`, payload, {
+				headers: {
+					Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+				},
+			});
+			socket.emit('new message', data);
+			dispatch(sendMessage(data));
+		} catch (error: any) {
+			dispatch(setMessageError(error.response.data.msg));
+		} finally {
+			setMessageLoader(false);
+		}
+	};

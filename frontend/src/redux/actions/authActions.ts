@@ -19,13 +19,13 @@ const setAuthError = (payLoad: String) => {
 export const login = (payLoad: Object) => async (dispatch: any) => {
 	setAuthLoader(true);
 	try {
-		const { data } = await axios.post(`${API_URI}/user/login`, payLoad);
+		const { data } = await axios.post(`${API_URI}/user/login`, payLoad, {});
+		sessionStorage.setItem('user', JSON.stringify(data));
+		sessionStorage.setItem('token', data.token);
 		dispatch({
 			type: types.LOGIN,
 			payload: data,
 		});
-		sessionStorage.setItem('user', JSON.stringify(data));
-		sessionStorage.setItem('token', data.token);
 	} catch (error: any) {
 		dispatch(setAuthError(error.response.data.msg));
 	} finally {

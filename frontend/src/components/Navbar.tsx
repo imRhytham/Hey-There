@@ -14,6 +14,7 @@ import {
 	accessChat,
 	getAllChats,
 	selectChat,
+	unSelectChat,
 } from '../redux/actions/chatActions';
 
 const Navbar = () => {
@@ -68,7 +69,10 @@ const Navbar = () => {
 						/>
 					</div>
 					<button
-						onClick={() => dispatch(logout())}
+						onClick={() => {
+							dispatch(logout());
+							dispatch(unSelectChat());
+						}}
 						className='flex items-center space-x-2 text-gray-500 hover:text-gray-700'
 					>
 						<ArrowLeftOnRectangleIcon className='h-6 w-6' />

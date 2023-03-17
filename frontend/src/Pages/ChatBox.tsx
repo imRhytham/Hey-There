@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
 	ArrowUturnLeftIcon,
@@ -9,20 +9,26 @@ import {
 	addUserToGroup,
 	deleteChat,
 	removeUserFromGroup,
-	selectChat,
 	unSelectChat,
 } from '../redux/actions/chatActions';
-import { getSender, isAdmin, isSameSender } from '../common/common';
+import { getSender, isAdmin } from '../common/common';
 import Modal from '../components/Modal';
 import TextField from '../components/TextField';
 import Chips from '../components/Chips';
 import useDebounce from '../Hooks/useDebounce';
 import { getUsers } from '../redux/actions/userActions';
 import ChatCard from '../components/ChatCard';
-import { getMessages, sendMessage } from '../redux/actions/messageActions';
-import ScrollableFeed from 'react-scrollable-feed';
+import {
+	getMessages,
+	sendMessage,
+	sendMessageApi,
+} from '../redux/actions/messageActions';
 import ScrollableChat from './ScrollableChat';
 import Loader from '../components/Loader';
+import { io } from 'socket.io-client';
+
+const ENDPOINT = 'http://localhost:5000';
+var socket: any, currentChattingWith: string;
 
 const ChatBox = () => {
 	const dispatch: any = useDispatch();
@@ -36,6 +42,13 @@ const ChatBox = () => {
 	const [enteredMessage, setEnteredMessage] = useState<string>('');
 	const messages = useSelector((state: any) => state.messages.messages);
 	const loading = useSelector((state: any) => state.messages.loading);
+	const [socketConnected, setSocketConnected] = useState<boolean>(false);
+
+	useEffect(() => {
+		socket = io(ENDPOINT);
+		socket.emit('setup', loggedUser);
+		socket.on('connection', () => setSocketConnected(true));
+	}, []);
 
 	useEffect(() => {
 		if (openModal && selectedChat.groupChat) {
@@ -70,11 +83,41 @@ const ChatBox = () => {
 		}
 	}, [selectedChat]);
 
+	const scrollToBottom = () => {
+		let chatContainer = document.getElementById('chatcontainer');
+		if (chatContainer) {
+			let scroll = chatContainer.scrollHeight - chatContainer.clientHeight;
+			chatContainer.scrollTo(0, scroll);
+		}
+	};
+
 	useEffect(() => {
 		if (selectedChat?._id) {
-			dispatch(getMessages(selectedChat?._id));
+			dispatch(getMessages(selectedChat?._id, socket));
+			currentChattingWith = selectedChat?._id;
 		}
 	}, [selectedChat]);
+
+	useEffect(() => {
+		if (messages.length) {
+			scrollToBottom();
+		}
+	});
+
+	useEffect(() => {
+		socket.on('message received', (newMessageReceived: any) => {
+			if (
+				!currentChattingWith ||
+				currentChattingWith !== newMessageReceived.chat._id
+			) {
+				console.log('====================================');
+				console.log('newMessageReceived', newMessageReceived);
+				console.log('====================================');
+			} else {
+				dispatch(sendMessage(newMessageReceived));
+			}
+		});
+	}, []);
 
 	const messageSend = useCallback(() => {
 		if (enteredMessage && enteredMessage.replace(/\s/g, '').length) {
@@ -84,7 +127,7 @@ const ChatBox = () => {
 				chatId: selectedChat._id,
 				text: enteredMessage,
 			};
-			dispatch(sendMessage(payload));
+			dispatch(sendMessageApi(payload, socket));
 			setEnteredMessage('');
 		}
 	}, [enteredMessage, selectedChat]);
@@ -131,10 +174,12 @@ const ChatBox = () => {
 						</div>
 						{/* chatBox Starts from here */}
 						<div className='flex flex-col  justify-between h-full overflow-y-auto bg-slate-600 rounded-md'>
-							<div className='flex flex-col h-full overflow-y-scroll'>
+							<div
+								className='flex flex-col h-full overflow-y-scroll'
+								id='chatcontainer'
+							>
 								<ScrollableChat messages={messages} />
 							</div>
-
 							<div className='flex flex-row space-x-2 p-2'>
 								<input
 									type='text'

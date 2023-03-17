@@ -2,12 +2,6 @@ import * as types from '../Types';
 import axios from 'axios';
 import { API_URI } from '../../common/common';
 
-const config = {
-	headers: {
-		Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-	},
-};
-
 const setChatLoader = (payLoad: Boolean) => {
 	return {
 		type: types.SET_CHAT_LOADER,
@@ -25,7 +19,11 @@ const setChatError = (payLoad: String) => {
 export const getAllChats = () => async (dispatch: any) => {
 	setChatLoader(true);
 	try {
-		const { data } = await axios.get(`${API_URI}/chats`, config);
+		const { data } = await axios.get(`${API_URI}/chats`, {
+			headers: {
+				Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+			},
+		});
 		dispatch({
 			type: types.GET_CHATS,
 			payload: data,
@@ -40,7 +38,12 @@ export const getAllChats = () => async (dispatch: any) => {
 export const accessChat = (id: any) => async (dispatch: any) => {
 	setChatLoader(true);
 	try {
-		const { data } = await axios.post(`${API_URI}/chats`, id, config);
+		const { data } = await axios.post(`${API_URI}/chats`, id, {
+			headers: {
+				Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+			},
+		});
+		// socket.emit('join room', data._id);
 		dispatch({
 			type: types.ACCESS_CHAT,
 			payload: data,
@@ -55,7 +58,11 @@ export const accessChat = (id: any) => async (dispatch: any) => {
 export const createGroupChat = (body: any) => async (dispatch: any) => {
 	setChatLoader(true);
 	try {
-		const { data } = await axios.post(`${API_URI}/chats/group`, body, config);
+		const { data } = await axios.post(`${API_URI}/chats/group`, body, {
+			headers: {
+				Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+			},
+		});
 		dispatch({
 			type: types.CREATE_GROUP_CHAT,
 			payload: data,
@@ -83,7 +90,11 @@ export const unSelectChat = () => {
 export const deleteChat = (body: any) => async (dispatch: any) => {
 	setChatLoader(true);
 	try {
-		await axios.delete(`${API_URI}/chats/${body._id}`, config);
+		await axios.delete(`${API_URI}/chats/${body._id}`, {
+			headers: {
+				Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+			},
+		});
 		dispatch({
 			type: types.DELETE_CHAT,
 			payload: body,
@@ -98,7 +109,11 @@ export const deleteChat = (body: any) => async (dispatch: any) => {
 export const removeUserFromGroup = (body: any) => async (dispatch: any) => {
 	setChatLoader(true);
 	try {
-		await axios.put(`${API_URI}/chats/group/remove`, body, config);
+		await axios.put(`${API_URI}/chats/group/remove`, body, {
+			headers: {
+				Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+			},
+		});
 		dispatch({
 			type: types.REMOVE_USER_FROM_GROUP,
 			payload: body,
@@ -113,7 +128,11 @@ export const removeUserFromGroup = (body: any) => async (dispatch: any) => {
 export const addUserToGroup = (body: any) => async (dispatch: any) => {
 	setChatLoader(true);
 	try {
-		await axios.put(`${API_URI}/chats/group/add`, body, config);
+		await axios.put(`${API_URI}/chats/group/add`, body, {
+			headers: {
+				Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+			},
+		});
 		dispatch({
 			type: types.ADD_USER_TO_GROUP,
 			payload: body,

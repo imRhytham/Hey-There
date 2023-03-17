@@ -28,7 +28,7 @@ import Loader from '../components/Loader';
 import { io } from 'socket.io-client';
 import Button from '../components/Button';
 
-const ENDPOINT = 'http://localhost:5000';
+const ENDPOINT = 'https://heythere-ces0.onrender.com';
 var socket: any, currentChattingWith: string;
 
 const ChatBox = () => {

@@ -40,6 +40,10 @@ const Login = () => {
 		dispatch(login(user));
 	};
 
+	const useGuestCredentials = () => {
+		setUser({ email: 'guest', password: 'guest123' });
+	};
+
 	const onkeydown = (e: any) => {
 		if (!user.password) return;
 
@@ -86,13 +90,19 @@ const Login = () => {
 								/>
 							</div>
 
-							<div className='text-center lg:text-left'>
+							<div className='text-center lg:text-left '>
 								<Button
 									onClick={handleSubmit}
 									disabled={Object.values(user).some((item) => item === '')}
 									className='inline-block px-7 py-3 bg-green-600 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out disabled:bg-green-400'
 								>
 									Login
+								</Button>
+								<Button
+									onClick={useGuestCredentials}
+									className='ml-2 inline-block px-7 py-3 bg-red-600 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out'
+								>
+									Use Guest credentials
 								</Button>
 								<p className='text-sm font-semibold mt-2 pt-1 mb-0'>
 									Don't have an account?

@@ -178,7 +178,7 @@ const ChatBox = () => {
 								<ScrollableChat messages={messages} />
 							</div>
 							<div className='flex flex-row space-x-2 p-2'>
-								<TextField
+								<input
 									type='text'
 									placeholder='Enter Message'
 									className='w-full  bg-slate-700 text-white rounded-md p-2'

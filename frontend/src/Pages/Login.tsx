@@ -40,6 +40,14 @@ const Login = () => {
 		dispatch(login(user));
 	};
 
+	const onkeydown = (e: any) => {
+		if (!user.password) return;
+
+		if (e.key === 'Enter') {
+			handleSubmit();
+		}
+	};
+
 	return (
 		<>
 			<Loader open={loading} />
@@ -74,6 +82,7 @@ const Login = () => {
 									placeholder='Password'
 									value={user.password}
 									onChange={(e) => eventHandler(e, 'password')}
+									onKeyDown={onkeydown}
 								/>
 							</div>
 

@@ -26,6 +26,7 @@ import {
 import ScrollableChat from './ScrollableChat';
 import Loader from '../components/Loader';
 import { io } from 'socket.io-client';
+import Button from '../components/Button';
 
 const ENDPOINT = 'http://localhost:5000';
 var socket: any, currentChattingWith: string;
@@ -109,11 +110,9 @@ const ChatBox = () => {
 			if (
 				!currentChattingWith ||
 				currentChattingWith !== newMessageReceived.chat._id
-			) {
-				console.log('====================================');
-				console.log('newMessageReceived', newMessageReceived);
-				console.log('====================================');
-			} else {
+			)
+				return;
+			else {
 				dispatch(sendMessage(newMessageReceived));
 			}
 		});
@@ -121,8 +120,6 @@ const ChatBox = () => {
 
 	const messageSend = useCallback(() => {
 		if (enteredMessage && enteredMessage.replace(/\s/g, '').length) {
-			console.log(selectedChat);
-
 			const payload = {
 				chatId: selectedChat._id,
 				text: enteredMessage,
@@ -181,7 +178,7 @@ const ChatBox = () => {
 								<ScrollableChat messages={messages} />
 							</div>
 							<div className='flex flex-row space-x-2 p-2'>
-								<input
+								<TextField
 									type='text'
 									placeholder='Enter Message'
 									className='w-full  bg-slate-700 text-white rounded-md p-2'
@@ -189,7 +186,7 @@ const ChatBox = () => {
 									onChange={(e) => setEnteredMessage(e.target.value)}
 									onKeyDown={onKeyDown}
 								/>
-								<button
+								<Button
 									className='bg-slate-700 text-white rounded-md p-2 disabled:bg-slate-500'
 									onClick={messageSend}
 									disabled={
@@ -197,7 +194,7 @@ const ChatBox = () => {
 									}
 								>
 									<PaperAirplaneIcon className='h-6 w-6' />
-								</button>
+								</Button>
 							</div>
 						</div>
 						{/* chatBox ends here */}

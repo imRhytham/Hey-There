@@ -27,7 +27,7 @@ export const login = (payLoad: Object) => async (dispatch: any) => {
 			payload: data,
 		});
 	} catch (error: any) {
-		dispatch(setAuthError(error.response.data.msg));
+		dispatch(setAuthError(error.response.data.message));
 	} finally {
 		dispatch(setAuthLoader(false));
 	}
@@ -53,6 +53,7 @@ export const register = (payLoad: Object) => async (dispatch: any) => {
 export const logout = () => {
 	sessionStorage.removeItem('user');
 	sessionStorage.removeItem('token');
+	window.location.reload();
 	return {
 		type: types.LOGOUT,
 	};

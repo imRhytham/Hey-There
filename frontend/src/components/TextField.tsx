@@ -8,6 +8,7 @@ interface TextFieldProps {
 	className?: string;
 	placeholder?: string;
 	icon?: ReactNode;
+	onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const TextField = ({
@@ -18,6 +19,7 @@ const TextField = ({
 	className = '',
 	placeholder = '',
 	icon,
+	onKeyDown,
 }: TextFieldProps) => {
 	return (
 		<div
@@ -31,6 +33,7 @@ const TextField = ({
 					onChange={onChange}
 					placeholder={placeholder}
 					className='focus:outline-none focus:border-none'
+					onKeyDown={onKeyDown}
 				/>
 				{icon && icon}
 			</div>

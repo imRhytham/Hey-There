@@ -2,12 +2,6 @@ import axios from 'axios';
 import { API_URI } from '../../common/common';
 import * as types from './../Types';
 
-const config = {
-	headers: {
-		Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-	},
-};
-
 const setMessageLoader = (payload: boolean) => {
 	return {
 		type: types.SET_MESSAGE_LOADER,

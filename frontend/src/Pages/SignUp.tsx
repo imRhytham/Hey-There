@@ -6,10 +6,12 @@ import Toast from '../components/Toast';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { register } from '../redux/actions/authActions';
+import ImageUpload from '../components/ImageUpload';
 interface form {
 	name: string;
 	email: string;
 	password: string;
+	avatar: string;
 }
 
 const SignUp = () => {
@@ -17,6 +19,7 @@ const SignUp = () => {
 		name: '',
 		email: '',
 		password: '',
+		avatar: '',
 	});
 	const loading: boolean = useSelector((state: any) => state.auth.loading);
 	const error: string = useSelector((state: any) => state.auth.error);
@@ -39,6 +42,10 @@ const SignUp = () => {
 
 	const handleSubmit = () => {
 		dispatch(register(user));
+	};
+
+	const uploadImage = (url: string) => {
+		setUser((prev) => ({ ...prev, avatar: url }));
 	};
 
 	return (
@@ -85,6 +92,9 @@ const SignUp = () => {
 									value={user.password}
 									onChange={(e) => eventHandler(e, 'password')}
 								/>
+							</div>
+							<div className='mb-6'>
+								<ImageUpload onImageUpload={uploadImage} image={user.avatar} />
 							</div>
 
 							<div className='text-center lg:text-left'>

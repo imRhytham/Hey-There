@@ -6,7 +6,6 @@ import TextField from '../components/TextField';
 import Toast from '../components/Toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../redux/actions/authActions';
-import { stat } from 'fs';
 
 interface form {
 	email: string;

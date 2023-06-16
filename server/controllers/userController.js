@@ -3,7 +3,7 @@ const asyncHandler = require('express-async-handler');
 const generateToken = require('../config/generateToken');
 
 const registerUser = asyncHandler(async (req, res) => {
-	const { name, email, password } = req.body;
+	const { name, email, password, avatar } = req.body;
 
 	if (!name || !email || !password) {
 		res.status(400);
@@ -21,6 +21,7 @@ const registerUser = asyncHandler(async (req, res) => {
 		name,
 		email,
 		password,
+		avatar,
 	});
 
 	if (user) {
@@ -90,4 +91,21 @@ const searchUser = asyncHandler(async (req, res) => {
 	}
 });
 
-module.exports = { registerUser, loginUser, searchUser };
+const editUser = asyncHandler(async (req, res) => {
+	const { name, avatar, status } = req.body;
+	const user = await User.findById(req.body._id);
+	if (!user) {
+		res.status(404);
+		throw new Error('User not found');
+	}
+	user.name = name || user.name;
+	user.avatar = avatar || user.avatar;
+	user.status = status || user.status;
+
+	const updatedUser = await User.findByIdAndUpdate(req.body._id, {
+		$set: user,
+	});
+	res.json({ message: 'success', data: updatedUser });
+});
+
+module.exports = { registerUser, loginUser, searchUser, editUser };

@@ -33,6 +33,11 @@ export default function authReducer(state = initialState, action: any) {
 				user: null,
 				isAuthenticated: false,
 			};
+		case types.SET_USER:
+			return {
+				...state,
+				user: action.payload,
+			};
 		default:
 			return state;
 	}

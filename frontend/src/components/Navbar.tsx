@@ -16,6 +16,7 @@ import {
 	selectChat,
 	unSelectChat,
 } from '../redux/actions/chatActions';
+import UserModal from './UserModal';
 
 const Navbar = () => {
 	const dispatch: any = useDispatch();
@@ -81,16 +82,7 @@ const Navbar = () => {
 				</div>
 
 				<Modal open={openModal} setOpen={setOpenModal} title='Profile'>
-					<div className='flex flex-col items-center space-y-2'>
-						<img
-							src={user.avatar}
-							alt='avatar'
-							className='h-18 w-18 rounded-full'
-							onClick={() => setOpenModal(true)}
-						/>
-						<h1 className='text-2xl font-bold'>{user.name}</h1>
-						<p className='text-gray-500'>{user.email}</p>
-					</div>
+					<UserModal user={user} />
 				</Modal>
 				<Modal title='Search Users' open={openSearch} setOpen={setOpenSearch}>
 					<div className='flex flex-col items-center space-y-2'>
